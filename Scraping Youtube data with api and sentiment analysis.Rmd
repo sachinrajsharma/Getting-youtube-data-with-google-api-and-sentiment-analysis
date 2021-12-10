@@ -1,0 +1,86 @@
+---
+title: "Getting Youtube Data with R"
+author: "Sachin Sharma"
+date: "12/10/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# We will install library : Tuber
+
+```{r}
+#install.packages("tuber")
+
+library(tuber) # youtube API
+library(magrittr) # Pipes %>%, %T>% and equals(), extract().
+library(tidyverse) # all tidyverse packages
+library(purrr) # package for iterating/extracting data
+
+
+
+# Input details of your youtube app id and other details as mentioned below after creating it on google cloud apis 
+
+#app_id <- "XXXX"
+#app_secret <- "XXXX"
+#yt_oauth(app_id, app_secret, token = '')
+#get_all_comments(video_id = "XXXX")
+#comments2 <- get_all_comments(video_id = "XXXX")
+#comments2
+
+# Creating the CSV file 
+#write.csv(comments2, file = "you_tube.csv")
+
+
+# Now reading the csv file 
+
+comment_2 <- read.csv("you_tube.csv")
+
+
+
+```
+
+
+# Sentiment Analysis : 
+
+```{r}
+library(syuzhet)
+comment_2 <- iconv(comment_2$textDisplay,to = 'utf-8')
+
+y_t <- get_nrc_sentiment(comment_2)
+
+
+#head(y_t)
+
+
+```
+
+
+
+# We  can add a neutral column as well, where sentiments are neutral , with the help of following code 
+
+
+
+```{r}
+
+y_t$neutral <- ifelse(y_t$negative + y_t$positive ==0,1,0)
+
+head(y_t)
+
+```
+
+# Plotting the bar plot : 
+
+```{r}
+
+barplot(100*colSums(y_t)/sum(y_t),
+        las = 2,
+        col = rainbow(11),
+        ylab = "Percentage",
+        main = " Youtube Sentiment Analysis",
+        )
+```
+
